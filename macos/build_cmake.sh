@@ -23,6 +23,16 @@ fi
 
 echo "  Using cmake: $(which cmake)"
 
+# Xcode 26 exports deployment targets for several Apple platforms into
+# script phases. CMake's compiler probes can inherit conflicting targets, so
+# leave only the macOS target visible before configuring.
+unset IPHONEOS_DEPLOYMENT_TARGET
+unset TVOS_DEPLOYMENT_TARGET
+unset WATCHOS_DEPLOYMENT_TARGET
+unset XROS_DEPLOYMENT_TARGET
+unset DRIVERKIT_DEPLOYMENT_TARGET
+export MACOSX_DEPLOYMENT_TARGET="10.15"
+
 # Use Xcode environment variables
 # ARCHS: space-separated list of architectures (e.g., "arm64" or "arm64 x86_64")
 # SDKROOT: path to the SDK
