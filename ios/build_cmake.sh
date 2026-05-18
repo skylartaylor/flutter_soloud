@@ -23,6 +23,16 @@ fi
 
 echo "  Using cmake: $(which cmake)"
 
+# Xcode 26 exports deployment targets for several Apple platforms into
+# script phases. CMake's compiler probes can inherit conflicting targets, so
+# leave only the iOS target visible before configuring.
+unset MACOSX_DEPLOYMENT_TARGET
+unset TVOS_DEPLOYMENT_TARGET
+unset WATCHOS_DEPLOYMENT_TARGET
+unset XROS_DEPLOYMENT_TARGET
+unset DRIVERKIT_DEPLOYMENT_TARGET
+export IPHONEOS_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-18.0}"
+
 # Use Xcode environment variables
 # PLATFORM_NAME: iphoneos, iphonesimulator
 # ARCHS: space-separated list of architectures (e.g., "arm64" or "arm64 x86_64")
@@ -68,7 +78,7 @@ cmake -S "${SCRIPT_DIR}" \
     -DCMAKE_SYSTEM_NAME=iOS \
     -DCMAKE_OSX_ARCHITECTURES="${CMAKE_ARCHS}" \
     -DCMAKE_OSX_SYSROOT="${SDKROOT}" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="13.0" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-18.0}" \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 cmake --build "${BUILD_DIR}" -j$(sysctl -n hw.ncpu)
